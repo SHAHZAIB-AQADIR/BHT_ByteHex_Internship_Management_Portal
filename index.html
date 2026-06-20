@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByteHex Internship Management Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-8 transform transition-all">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900">ByteHex <span class="text-blue-600">Portal</span></h2>
+                <p class="text-gray-500 mt-2">Sign in to manage your interns</p>
+            </div>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Email Address</label>
+                    <input type="email" id="login-email" required class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="admin@bytehex.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Password</label>
+                    <input type="password" id="login-password" required class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition duration-200">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MAIN PORTAL APP (Hidden by Default) ================= -->
+    <div id="app-screen" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-slate-900 text-white flex flex-col shadow-xl">
+            <div class="p-5 text-2xl font-bold border-b border-slate-800 flex justify-between items-center">
+                <span>ByteHex UI</span>
+                <button id="logout-btn" class="text-sm text-red-400 hover:text-red-300 md:hidden"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('dashboard')" class="nav-link w-full flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-600 text-white font-medium transition"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></button>
+                <button onclick="switchTab('interns')" class="nav-link w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition"><i class="fas fa-users"></i> <span>Interns List</span></button>
+                <button onclick="switchTab('tasks')" class="nav-link w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition"><i class="fas fa-tasks"></i> <span>Task System</span></button>
+                <button onclick="switchTab('attendance')" class="nav-link w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white font-medium transition"><i class="fas fa-calendar-check"></i> <span>Attendance</span></button>
+            </nav>
+            <div class="p-4 border-t border-slate-800 hidden md:block">
+                <button onclick="logout()" class="w-full py-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition text-sm font-semibold"><i class="fas fa-sign-out-alt mr-2"></i> Logout</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            
+            <!-- ====== TAB 1: DASHBOARD ====== -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg text-2xl"><i class="fas fa-user-graduate"></i></div>
+                        <div><h3 class="text-gray-500 text-sm font-medium">Total Interns</h3><p id="stat-total" class="text-2xl font-bold text-gray-800">0</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-3 bg-green-100 text-green-600 rounded-lg text-2xl"><i class="fas fa-spinner"></i></div>
+                        <div><h3 class="text-gray-500 text-sm font-medium">Active Tasks</h3><p id="stat-tasks" class="text-2xl font-bold text-gray-800">0</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg text-2xl"><i class="fas fa-check-circle"></i></div>
+                        <div><h3 class="text-gray-500 text-sm font-medium">Completed</h3><p id="stat-completed" class="text-2xl font-bold text-gray-800">0</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                        <div class="p-3 bg-yellow-100 text-yellow-600 rounded-lg text-2xl"><i class="fas fa-star"></i></div>
+                        <div><h3 class="text-gray-500 text-sm font-medium">Avg Performance</h3><p id="stat-perf" class="text-2xl font-bold text-gray-800">0%</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ====== TAB 2: INTERNS CRUD ====== -->
+            <section id="tab-interns" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <h1 class="text-3xl font-bold text-gray-800">Manage Interns</h1>
+                    <button onclick="toggleModal('intern-modal', true)" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition"><i class="fas fa-plus mr-2"></i> Register New Intern</button>
+                </div>
+                <!-- Search bar -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <input type="text" id="search-intern" oninput="renderInterns()" placeholder="Search interns by name or department..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <!-- Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
+                                <th class="p-4 text-sm font-semibold text-gray-600">Email</th>
+                                <th class="p-4 text-sm font-semibold text-gray-600">Department</th>
+                                <th class="p-4 text-sm font-semibold text-gray-600">Performance</th>
+                                <th class="p-4 text-sm font-semibold text-gray-600 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="interns-table-body" class="divide-y divide-gray-100">
+                            <!-- JS updates here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ====== TAB 3: TASK ASSIGNMENT ====== -->
+            <section id="tab-tasks" class="tab-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Task Management</h1>
+                    <button onclick="openTaskModal()" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-sm transition"><i class="fas fa-tasks mr-2"></i> Assign New Task</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="tasks-list">
+                    <!-- JS updates here -->
+                </div>
+            </section>
+
+            <!-- ====== TAB 4: ATTENDANCE TRACKING ====== -->
+            <section id="tab-attendance" class="tab-content hidden space-y-6">
+                <h1 class="text-3xl font-bold text-gray-800">Daily Attendance Tracking</h1>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <span class="text-lg font-semibold text-gray-700">Mark Attendance for Today:</span>
+                        <input type="date" id="attendance-date" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-4 text-sm font-semibold text-gray-600">Intern</th>
+                                    <th class="p-4 text-sm font-semibold text-gray-600 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body" class="divide-y divide-gray-100">
+                                <!-- JS updates here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ================= MODALS (Add/Edit Forms) ================= -->
+    <!-- Intern Add/Edit Modal -->
+    <div id="intern-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-900 mb-4">Register New Intern</h3>
+            <form id="intern-form" class="space-y-4">
+                <input type="hidden" id="intern-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="intern-name" required class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="intern-email" required class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Department</label>
+                    <select id="intern-dept" class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="Frontend Development">Frontend Development</option>
+                        <option value="Backend Development">Backend Development</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="QA Testing">QA Testing</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Performance Score (0 - 100)</label>
+                    <input type="number" id="intern-performance" min="0" max="100" value="80" class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="toggleModal('intern-modal', false)" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Assignment Modal -->
+    <div id="task-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Assign New Task</h3>
+            <form id="task-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Task Title</label>
+                    <input type="text" id="task-title" required class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Assign To</label>
+                    <select id="task-assignee" class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <!-- Options will be populated via JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Due Date</label>
+                    <input type="date" id="task-date" required class="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="toggleModal('task-modal', false)" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-sm">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Javascript File Linking -->
+    <script src="app.js"></script>
+</body>
+</html>
